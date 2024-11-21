@@ -1,0 +1,226 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Aging Transformation App</title>
+  <style>
+    body {
+      font-family: 'Roboto', sans-serif;
+      background: url(https://app.scribbr.com/build/images/plagiarism-bg.13654ac9.svg) calc(50% - 175px) -510px no-repeat;
+      background-size: 1800px;
+      margin: 0;
+      padding: 0;
+      margin-top: 5rem;
+      margin-bottom: 5rem;
+    }
+
+    h1 {
+      text-align: center;
+      color: #1b2b68;
+      font-size: 50px;
+    }
+
+    form {
+      text-align: center;
+      margin-top: 20px;
+      color: #1b2b68;
+    }
+
+    input[type="file"] {
+      padding: 10px;
+      margin-right: 10px;
+    }
+
+    input #file-upload-button{
+      padding: 10px;
+      color: #1b2b68;
+      font-size: 16px;
+      font-family: Roboto;
+    }
+
+    select {
+      padding: 10px;
+      margin-right: 10px;
+      color: #1b2b68;
+    }
+
+    input[type="submit"] {
+      padding: 10px 20px;
+      background-color: #4CAF50;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+
+    .error {
+      color: red;
+      text-align: center;
+    }
+
+    .main-container {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .image-container {
+      display: flex;
+      margin-top: 20px;
+      flex-direction: row;
+      justify-content: center;
+    }
+
+    .image {
+      padding: 10px;
+      display: flex;
+      justify-content: center;
+      flex-direction: column;
+      align-items: center;
+      margin-right: 30px;
+      margin-left: 30px;
+    }
+
+    img {
+      max-width: 100%;
+      height: auto;
+      border-radius: 5px;
+    }
+
+    p {
+      margin-bottom: 10px;
+      font-weight: bold;
+      color: #1b2b68;
+    }
+
+    input[type="file"] {
+      display: none; /* Hide the default file input */
+    }
+
+    label[for="fileInput"] {
+      padding: 10px;
+      margin-right: 10px;
+      background-color: #4CAF50;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+
+    .file-name {
+      font-size: 16px;
+      color: #1b2b68;
+    }
+
+    span#fileNameDisplay {
+    margin-right: 50px;
+    }
+
+  </style>
+  <script>
+    document.addEventListener('DOMContentLoaded', function () {
+      var fileInput = document.getElementById('fileInput');
+      var fileNameDisplay = document.getElementById('fileNameDisplay');
+      var fileNameInput = document.getElementById('fileNameInput');
+      var form = document.getElementById('form');
+
+      // Restore the file name if it was previously selected
+      if (fileNameInput.value !== '') {
+        fileNameDisplay.textContent = fileNameInput.value;
+      }
+
+      fileInput.addEventListener('change', function () {
+        updateFileName();
+      });
+
+      form.addEventListener('submit', function (event) {
+        // Check if a new file has been selected
+        if (fileInput.files.length > 0) {
+          // Update the file name only if a new file has been selected
+          updateFileName();
+        } else {
+          // If no new file is selected, restore the file name from the hidden input
+          fileNameDisplay.textContent = fileNameInput.value || 'No file chosen';
+        }
+      });
+
+      function updateFileName() {
+        var fileName = fileInput.files[0] ? fileInput.files[0].name : 'No file chosen';
+        fileNameDisplay.textContent = fileName;
+        fileNameInput.value = fileName;
+      }
+    });
+  </script>
+
+</head>
+<body>
+  <h1>Aging Transformation App</h1>
+  <form id="form" action="/upload" method="post" enctype="multipart/form-data">
+    <!-- <input type="file" name="file" id="fileInput" style="width: 300px; padding: 5px; font-size: 16px; color: #1b2b68;"> -->
+    <label for="fileInput" style="padding: 10px; margin-right: 10px; background-color: #1b2b68; color: white; border: none; border-radius: 5px; cursor: pointer;">Choose a file</label>
+    <span class="file-name" id="fileNameDisplay">{{ filename or 'No file chosen' }}</span>
+    <input type="file" name="file" id="fileInput" style="display: none;">
+    <input type="hidden" name="fileName" id="fileNameInput">
+    <label for="age" style="font-weight: bold">Age:</label>
+    <select name="age" id="age" style="padding: 8px; font-size: 16px; color: #1b2b68; border-radius: 5px">
+      <option value="" {% if not chosen_age %}selected{% endif %}>Lifespan</option>
+      <option value="5" {% if chosen_age == '5' %}selected{% endif %}>0-2</option>
+      <option value="15" {% if chosen_age == '15' %}selected{% endif %}>3-6</option>
+      <option value="18" {% if chosen_age == '18' %}selected{% endif %}>7-9</option>
+      <option value="27" {% if chosen_age == '27' %}selected{% endif %}>15-19</option>
+      <option value="46" {% if chosen_age == '46' %}selected{% endif %}>30-39</option>
+      <option value="80" {% if chosen_age == '80' %}selected{% endif %}>50-69</option>
+    </select>
+    <input type="submit" value="Submit" style="font-size: 16px; border-radius: 5px">
+  </form>
+  {% if error %}
+    <p class="error">{{ error }}</p>
+  {% endif %}
+  <div class="main-container">
+  <div class="image-container">
+    {% if original_image %}
+    <div class="image">
+        <p>Original Image</p>
+        <img src="data:image/jpeg;base64,{{ original_image }}" alt="Original Image">
+    </div>
+    {% endif %}
+    {% if result_image %}
+    <div class="image">
+        <p>LATS result</p>
+        <img src="data:image/jpeg;base64,{{ result_image }}" alt="Result Image">
+    </div>
+    {% endif %}
+    {% if sam_image %}
+    <div class="image">
+        <p>SAM result</p>
+        <img src="data:image/jpeg;base64,{{ sam_image }}" alt="Input Image">
+    </div>
+    {% endif %}
+    {% if video_file %}
+      <div class="image">
+        <p>LATS result</p>
+        <video width="350" controls>
+          <source src="{{ video_file }}" type="video/mp4">
+          Your browser does not support the video tag.
+        </video>
+      </div>
+    {% endif %}
+    {% if sam_video %}
+      <div class="image">
+        <p>SAM result</p>
+        <video width="350" controls>
+          <source src="{{ sam_video }}" type="video/mp4">
+          Your browser does not support the video tag.
+        </video>
+      </div>
+    {% endif %}
+  </div>
+  <div class="gender">
+    {% if gender %}
+      <p>Gender: {{ gender }}<p>
+    {% endif %}
+  </div>
+  </div>
+</body>
+</html>
